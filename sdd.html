@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Générateur d'Embed Discord</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #2c2f33;
+      color: white;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: none;
+      font-size: 14px;
+    }
+    input, textarea {
+      background: #23272a;
+      color: white;
+    }
+    button {
+      background-color: #7289da;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    h1 {
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Générateur d'Embed Discord</h1>
+    <input type="text" id="webhook" placeholder="URL du webhook Discord" required />
+    <input type="text" id="title" placeholder="Titre de l'embed" />
+    <textarea id="description" placeholder="Description de l'embed" rows="6"></textarea>
+    <input type="color" id="color" value="#5865F2" />
+    <button onclick="sendEmbed()">Envoyer l'Embed</button>
+    <p id="result"></p>
+  </div>
+
+  <script>
+    async function sendEmbed() {
+      const webhook = document.getElementById('webhook').value;
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const color = document.getElementById('color').value.replace('#', '');
+
+      if (!webhook) {
+        alert("Merci de renseigner l'URL du webhook.");
+        return;
+      }
+
+      const embed = {
+        embeds: [
+          {
+            title: title,
+            description: description,
+            color: parseInt(color, 16)
+          }
+        ]
+      };
+
+      try {
+        const res = await fetch(webhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(embed)
+        });
+
+        if (res.ok) {
+          document.getElementById('result').innerText = "✅ Embed envoyé avec succès !";
+        } else {
+          document.getElementById('result').innerText = "❌ Erreur lors de l'envoi. Vérifie le webhook.";
+        }
+      } catch (e) {
+        document.getElementById('result').innerText = "❌ Erreur réseau ou webhook invalide.";
+        console.error(e);
+      }
+    }
+  </script>
+</body>
+</html>
